@@ -3,14 +3,16 @@ package com.zmitrovich.meteostation.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zmitrovich.meteostation.data.WeatherRepository
-import com.zmitrovich.meteostation.data.model.WeatherModel
 import com.zmitrovich.meteostation.data.model.parameters.WeatherParameters
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
@@ -21,7 +23,9 @@ class MainViewModel(
         viewModelScope.launch {
             eventChannel.send(Event.Loading)
             val weatherResult = when (weatherType) {
-                WeatherType.AIR_TEMPERATURE -> weatherRepository.getAirTemperature()
+                WeatherType.AIR_TEMPERATURE -> weatherRepository.getMeteorologicalIndicators(
+                    WeatherType.AIR_TEMPERATURE
+                )
                 else -> throw RuntimeException()
             }
             eventChannel.send(Event.WeatherEvent(weatherType, weatherResult))
@@ -29,7 +33,11 @@ class MainViewModel(
     }
 
     sealed class Event {
-        data class WeatherEvent(val weatherType: WeatherType, val data: Result<Map<String, Map<Date, Float>>>) : Event()
+        data class WeatherEvent(
+            val weatherType: WeatherType,
+            val data: Result<Map<String, Map<Date, Float>>>
+        ) : Event()
+
         object Loading : Event()
     }
 }
