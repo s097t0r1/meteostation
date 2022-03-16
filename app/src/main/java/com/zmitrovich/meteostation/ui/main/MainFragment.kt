@@ -18,6 +18,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.zmitrovich.meteostation.data.model.getFirstEntry
+import com.zmitrovich.meteostation.data.model.lineColors
 import com.zmitrovich.meteostation.data.model.parameters.WeatherInterval
 import com.zmitrovich.meteostation.data.model.parameters.WeatherParameters
 import com.zmitrovich.meteostation.databinding.MainFragmentBinding
@@ -95,14 +96,10 @@ class MainFragment : Fragment() {
                         index.toFloat(),
                         value
                     )
-                }, label).apply {
-                    val color = listOfColors.random()
-                    this.color = color
-                    listOfColors = listOfColors.filterNot { it == color }
-                }
+                }, label)
             )
         }
-        binding.lcMain.data = LineData(dataSets)
+        binding.lcMain.data = LineData(dataSets).apply { lineColors = listOfColors }
         binding.lcMain.invalidate()
     }
 
