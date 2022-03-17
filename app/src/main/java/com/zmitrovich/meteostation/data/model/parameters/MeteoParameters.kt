@@ -2,13 +2,13 @@ package com.zmitrovich.meteostation.data.model.parameters
 
 import java.util.*
 
-data class WeatherParameters(
+data class MeteoParameters(
     val year: Int,
-    val interval: WeatherInterval,
+    val interval: MeteoInterval,
     val from: Date
 )
 
-enum class WeatherInterval {
+enum class MeteoInterval {
     WEEK,
     MONTH,
     QUARTER,

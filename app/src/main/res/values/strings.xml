@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Meteostation</string>
+    <string name="error_text">Что-то пошло не так</string>
 </resources>

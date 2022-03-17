@@ -1,6 +1,5 @@
 package com.zmitrovich.meteostation.ui.main
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,10 +18,15 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.zmitrovich.meteostation.data.model.getFirstEntry
 import com.zmitrovich.meteostation.data.model.lineColors
-import com.zmitrovich.meteostation.data.model.parameters.WeatherInterval
-import com.zmitrovich.meteostation.data.model.parameters.WeatherParameters
+import com.zmitrovich.meteostation.data.model.parameters.MeteoData
+import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
+import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import com.zmitrovich.meteostation.databinding.MainFragmentBinding
+import com.zmitrovich.meteostation.ui.crossFade
+import com.zmitrovich.meteostation.ui.makeGone
+import com.zmitrovich.meteostation.ui.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.text.SimpleDateFormat
@@ -38,7 +42,6 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: MainFragmentBinding
 
-
     private var listOfColors = ColorTemplate.VORDIPLOM_COLORS.toList()
 
     override fun onCreateView(
@@ -51,42 +54,57 @@ class MainFragment : Fragment() {
             lcMain.setScaleEnabled(true)
             lcMain.animateXY(1000, 1000, Easing.EaseInQuad)
         }
-        setupEventObserver()
+        setupObservers()
         return binding.root
     }
 
-    private fun setupEventObserver() {
-        viewModel.eventsFlow
-            .onEach {
-                when (it) {
-                    is MainViewModel.Event.Loading -> showProgressBar()
-                    is MainViewModel.Event.WeatherEvent -> {
-                        when {
-                            it.data.isSuccess -> setData(it.data.getOrNull()!!)
-                            it.data.isFailure -> showError()
-                        }
-                    }
-                }
-            }.launchIn(lifecycleScope)
+    private fun setupObservers() {
+
+        lifecycleScope.launchWhenCreated {
+
+            viewModel.meteoData.collect {
+                it?.let { setData(it) }
+            }
+
+            viewModel.isLoading.collect { isLoading ->
+                if (isLoading) showProgressBar()
+            }
+
+            viewModel.error.collect { isError ->
+                if (isError) showError()
+            }
+
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getWeather(
             WeatherType.AIR_TEMPERATURE,
-            WeatherParameters(2001, WeatherInterval.MONTH, Date(1647451012087L))
+            MeteoParameters(2001, MeteoInterval.MONTH, Date(1647451012087L))
         )
     }
 
     private fun showError() {
-        TODO("Not yet implemented")
+        binding.lcMain.makeGone()
+        binding.pbMain.makeGone()
+        binding.tvError.makeVisible()
     }
 
     private fun showProgressBar() {
-
+        binding.lcMain.makeGone()
+        binding.tvError.makeGone()
+        binding.pbMain.makeVisible()
     }
 
-    private fun setData(data: Map<String, Map<Date, Float>>) {
+    private fun showData() {
+        binding.lcMain.makeVisible()
+        binding.tvError.makeGone()
+        binding.pbMain.makeGone()
+    }
+
+    private fun setData(data: MeteoData) {
         setupXAxis(data.getFirstEntry().value.keys.toList())
         val dataSets = mutableListOf<ILineDataSet>()
         for ((label, XY) in data) {
@@ -99,7 +117,10 @@ class MainFragment : Fragment() {
                 }, label)
             )
         }
-        binding.lcMain.data = LineData(dataSets).apply { lineColors = listOfColors }
+        binding.lcMain.data = LineData(dataSets).apply {
+            lineColors = listOfColors
+        }
+        showData()
         binding.lcMain.invalidate()
     }
 

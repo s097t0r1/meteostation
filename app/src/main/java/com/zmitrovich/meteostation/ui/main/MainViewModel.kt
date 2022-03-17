@@ -3,9 +3,13 @@ package com.zmitrovich.meteostation.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zmitrovich.meteostation.data.WeatherRepository
-import com.zmitrovich.meteostation.data.model.parameters.WeatherParameters
+import com.zmitrovich.meteostation.data.model.parameters.MeteoData
+import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
@@ -16,19 +20,28 @@ class MainViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
-    private val eventChannel = Channel<Event>(Channel.BUFFERED)
-    val eventsFlow = eventChannel.receiveAsFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    fun getWeather(weatherType: WeatherType, weatherParameters: WeatherParameters) {
+    private val _meteoData = MutableStateFlow<MeteoData?>(null)
+    val meteoData: StateFlow<MeteoData?> = _meteoData
+
+    private val _error = MutableStateFlow(false)
+    val error: StateFlow<Boolean> = _error
+
+    fun getWeather(weatherType: WeatherType, meteoParameters: MeteoParameters) {
         viewModelScope.launch {
-            eventChannel.send(Event.Loading)
-            val weatherResult = when (weatherType) {
-                WeatherType.AIR_TEMPERATURE -> weatherRepository.getMeteorologicalIndicators(
-                    WeatherType.AIR_TEMPERATURE
-                )
-                else -> throw RuntimeException()
-            }
-            eventChannel.send(Event.WeatherEvent(weatherType, weatherResult))
+            _isLoading.value = true
+            delay(3000)
+            weatherRepository.getMeteorologicalIndicators(WeatherType.AIR_TEMPERATURE)
+                .onSuccess {
+                    _meteoData.value = it
+                    _error.value = false
+                }
+                .onFailure {
+                    _error.value = true
+                }
+            _isLoading.value = false
         }
     }
 
