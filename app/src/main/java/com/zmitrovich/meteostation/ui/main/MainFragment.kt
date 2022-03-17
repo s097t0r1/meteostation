@@ -22,7 +22,6 @@ import com.zmitrovich.meteostation.data.model.parameters.MeteoData
 import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
 import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import com.zmitrovich.meteostation.databinding.MainFragmentBinding
-import com.zmitrovich.meteostation.ui.crossFade
 import com.zmitrovich.meteostation.ui.makeGone
 import com.zmitrovich.meteostation.ui.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +36,8 @@ class MainFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainFragment()
+
+        const val TAG = "com.zmitrovich.meteostation.ui.main.MainFragment"
     }
 
     private val viewModel: MainViewModel by viewModels()
@@ -49,7 +50,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = MainFragmentBinding.inflate(inflater, null, false).apply {
+        binding = MainFragmentBinding.inflate(inflater, container, false).apply {
             lcMain.setTouchEnabled(true)
             lcMain.setScaleEnabled(true)
             lcMain.animateXY(1000, 1000, Easing.EaseInQuad)
@@ -60,21 +61,18 @@ class MainFragment : Fragment() {
 
     private fun setupObservers() {
 
-        lifecycleScope.launchWhenCreated {
+        viewModel.isLoading.onEach { isLoading ->
+            if (isLoading) showProgressBar()
+        }.launchIn(lifecycleScope)
 
-            viewModel.meteoData.collect {
-                it?.let { setData(it) }
-            }
+        viewModel.meteoData.onEach {
+            it?.let { setData(it) }
+        }.launchIn(lifecycleScope)
 
-            viewModel.isLoading.collect { isLoading ->
-                if (isLoading) showProgressBar()
-            }
+        viewModel.error.onEach { isError ->
+            if (isError) showError()
+        }.launchIn(lifecycleScope)
 
-            viewModel.error.collect { isError ->
-                if (isError) showError()
-            }
-
-        }
 
     }
 
@@ -82,7 +80,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getWeather(
             WeatherType.AIR_TEMPERATURE,
-            MeteoParameters(2001, MeteoInterval.MONTH, Date(1647451012087L))
+            MeteoParameters(MeteoInterval.MONTH, Date(1647451012087L))
         )
     }
 
@@ -133,6 +131,7 @@ class MainFragment : Fragment() {
                 return simpleDateFormat.format(datesList[value.toInt()])
             }
         }
+
         with(binding.lcMain.xAxis) {
             position = XAxis.XAxisPosition.BOTTOM
             granularity = 1f
@@ -140,5 +139,15 @@ class MainFragment : Fragment() {
         }
     }
 
+    fun showBottomSheetDialog() {
+        MainBottomSheetFragment.create(object : MainBottomSheetDialogListener {
+            override fun onPropertiesSelected(
+                weatherType: WeatherType,
+                meteoParameters: MeteoParameters
+            ) {
+                viewModel.getWeather(weatherType, meteoParameters)
+            }
+        }).show(childFragmentManager, MainBottomSheetFragment.TAG)
+    }
 
 }
