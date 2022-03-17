@@ -8,14 +8,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:title="@string/app_name"
         app:menu="@menu/top_app_bar"
+        style="@style/Toolbar"
+        app:titleTextColor="@color/white"
         android:background="?attr/colorPrimary"
-        style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
         />
 
     <androidx.fragment.app.FragmentContainerView

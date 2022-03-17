@@ -1,4 +1,4 @@
-package com.zmitrovich.meteostation.data.model.parameters
+package com.zmitrovich.meteostation.data.model
 
 import java.text.SimpleDateFormat
 import java.util.*

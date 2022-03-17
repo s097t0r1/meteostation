@@ -3,14 +3,12 @@ package com.zmitrovich.meteostation.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zmitrovich.meteostation.data.WeatherRepository
-import com.zmitrovich.meteostation.data.model.parameters.MeteoData
+import com.zmitrovich.meteostation.data.model.MeteoData
 import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -32,8 +30,9 @@ class MainViewModel @Inject constructor(
     fun getWeather(weatherType: WeatherType, meteoParameters: MeteoParameters) {
         viewModelScope.launch {
             _isLoading.value = true
+            _error.value = false
             delay(3000)
-            weatherRepository.getMeteorologicalIndicators(WeatherType.AIR_TEMPERATURE)
+            weatherRepository.getMeteorologicalIndicators(weatherType)
                 .onSuccess {
                     _meteoData.value = it
                     _error.value = false

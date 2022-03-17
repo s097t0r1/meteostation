@@ -70,11 +70,11 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
             )
         )
 
-        binding.actvSamplePeriod.setOnItemClickListener { adapterView, view, i, l ->
+        binding.actvSamplePeriod.setOnItemClickListener { _, _, i, _ ->
             samplePeriodState.value = intervalList[i]
         }
 
-        // Setup weather type dropdown
+        // Setup weather type dropdown menu
         val weatherTypeList = WeatherType.values()
         binding.actvWeatherType.setAdapter(
             ArrayAdapter(
@@ -84,7 +84,7 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
             )
         )
 
-        binding.actvWeatherType.setOnItemClickListener { adapterView, view, i, l ->
+        binding.actvWeatherType.setOnItemClickListener { _, _, i, _ ->
             weatherTypeState.value = weatherTypeList[i]
         }
 
@@ -109,11 +109,8 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
 
         datePicker.addOnPositiveButtonClickListener {
             val startDate = SimpleDateFormat("EEE, d MMM yyyy", Locale.ROOT).format(Date(it))
-            binding.etStartDate.setText(
-                startDate
-            )
+            binding.etStartDate.setText(startDate)
             startDateState.value = startDate
-
         }
         datePicker.show(childFragmentManager, null)
     }

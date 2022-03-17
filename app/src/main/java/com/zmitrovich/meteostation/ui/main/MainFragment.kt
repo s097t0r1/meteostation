@@ -16,16 +16,14 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.zmitrovich.meteostation.data.model.MeteoData
 import com.zmitrovich.meteostation.data.model.getFirstEntry
 import com.zmitrovich.meteostation.data.model.lineColors
-import com.zmitrovich.meteostation.data.model.parameters.MeteoData
-import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
 import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import com.zmitrovich.meteostation.databinding.MainFragmentBinding
 import com.zmitrovich.meteostation.ui.makeGone
 import com.zmitrovich.meteostation.ui.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.text.SimpleDateFormat

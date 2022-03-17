@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/s097t0r1/AndroidStudioProjects/meteostation/app/src/main/res/drawable/ic_baseline_filter_list_24.xml" value="0.1945" />
+        <entry key="..\:/Users/s097t0r1/AndroidStudioProjects/meteostation/app/src/main/res/layout-land/main_activity.xml" value="0.1693121693121693" />
+        <entry key="..\:/Users/s097t0r1/AndroidStudioProjects/meteostation/app/src/main/res/layout/main_activity.xml" value="0.17074275362318841" />
+        <entry key="..\:/Users/s097t0r1/AndroidStudioProjects/meteostation/app/src/main/res/layout/main_fragment.xml" value="0.17074275362318841" />
         <entry key="..\:/Users/usr/AndroidStudioProjects/Meteostation/app/src/main/res/drawable/ic_baseline_error_outline_24.xml" value="0.2085" />
         <entry key="..\:/Users/usr/AndroidStudioProjects/Meteostation/app/src/main/res/layout/main_activity.xml" value="0.358695652173913" />
         <entry key="..\:/Users/usr/AndroidStudioProjects/Meteostation/app/src/main/res/layout/main_bottom_sheet_fragment.xml" value="0.358695652173913" />
