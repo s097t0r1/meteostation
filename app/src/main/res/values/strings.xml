@@ -4,10 +4,18 @@
     <string name="start_date_input_hint">Выберите дату начала</string>
     <string name="select_sample_period">Выберите период выборки</string>
     <string name="select_weather_type">Выберите тип метеоданных</string>
-    <string-array name="sample_period">
-        <item>Неделя</item>
-        <item>Месяц</item>
-        <item>Квартель</item>
-        <item>Год</item>
-    </string-array>
+
+    <!--    Interval    -->
+    <string name="interval_week">Неделя</string>
+    <string name="interval_month">Месяц</string>
+    <string name="interval_quarter">Квартал</string>
+    <string name="interval_year">Год</string>
+
+    <string name="meteo_type_air_temperature">Температура воздуха</string>
+    <string name="meteo_type_pressure">Давление</string>
+    <string name="meteo_type_soil_temperature">Температура почвы</string>
+    <string name="meteo_type_solar_radiation">Солнечная радиация</string>
+    <string name="meteo_type_wetness">Влажность</string>
+    <string name="meteo_type_wind_speed">Скорость ветра</string>
+
 </resources>

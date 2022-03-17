@@ -21,14 +21,13 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
     var listener: MainBottomSheetDialogListener? = null
     lateinit var binding: MainBottomSheetFragmentBinding
 
-    private val startDateState = MutableStateFlow("")
-    private val samplePeriodState = MutableStateFlow("")
-    private val weatherTypeState = MutableStateFlow("")
+    private val startDateState = MutableStateFlow<String?>(null)
+    private val samplePeriodState = MutableStateFlow<MeteoInterval?>(null)
+    private val weatherTypeState = MutableStateFlow<WeatherType?>(null)
 
     private val formIsValid = combine(startDateState, samplePeriodState, weatherTypeState) { arr ->
-        return@combine arr.fold(true) { acc, next -> acc && next.isNotEmpty() }
+        arr.fold(true) { acc, value -> value != null && acc}
     }
-
     companion object {
 
         const val TAG = "com.zmitrovich.meteostation.ui.main.MainBottomSheetFragment"
@@ -62,39 +61,39 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
         binding.etStartDate.setOnClickListener { showDatePicker() }
 
         // Setup sample period dropdown menu
-        val samplePeriodList = MeteoInterval.values().toList()
+        val intervalList = MeteoInterval.values()
         binding.actvSamplePeriod.setAdapter(
             ArrayAdapter(
                 requireContext(),
                 R.layout.sample_period_list_item,
-                samplePeriodList.map { it.value }
+                intervalList.map { getString(it.value) }
             )
         )
 
         binding.actvSamplePeriod.setOnItemClickListener { adapterView, view, i, l ->
-            samplePeriodState.value = samplePeriodList[i].value
+            samplePeriodState.value = intervalList[i]
         }
 
         // Setup weather type dropdown
-        val weatherTypeList = WeatherType.values().toList()
+        val weatherTypeList = WeatherType.values()
         binding.actvWeatherType.setAdapter(
             ArrayAdapter(
                 requireContext(),
                 R.layout.sample_period_list_item,
-                weatherTypeList.map { it.value }
+                weatherTypeList.map { getString(it.value) }
             )
         )
 
         binding.actvWeatherType.setOnItemClickListener { adapterView, view, i, l ->
-            weatherTypeState.value = weatherTypeList[i].value
+            weatherTypeState.value = weatherTypeList[i]
         }
 
         // Setup button listener
         binding.btnSelect.setOnClickListener {
             listener?.onPropertiesSelected(
-                WeatherType.values().find { weatherTypeState.value == it.value }!!,
+                weatherTypeState.value!!,
                 MeteoParameters(
-                    MeteoInterval.values().find { samplePeriodState.value == it.value }!!,
+                    samplePeriodState.value!!,
                     SimpleDateFormat("EEE, d MMM yyyy", Locale.ROOT).parse(startDateState.value)
                 )
             )

@@ -1,10 +1,13 @@
 package com.zmitrovich.meteostation.ui.main
 
-enum class WeatherType(val value: String) {
-    AIR_TEMPERATURE("Температура воздуха"),
-    PRESSURE("Давление"),
-    SOIL_TEMPERATURE("Температура почвы"),
-    SOLAR_RADIATION("Солнечная радиация"),
-    WETNESS("Влажность"),
-    WIND_SPEED("Скорость ветра")
+import androidx.annotation.StringRes
+import com.zmitrovich.meteostation.R
+
+enum class WeatherType(@StringRes val value: Int) {
+    AIR_TEMPERATURE(R.string.meteo_type_air_temperature),
+    PRESSURE(R.string.meteo_type_pressure),
+    SOIL_TEMPERATURE(R.string.meteo_type_soil_temperature),
+    SOLAR_RADIATION(R.string.meteo_type_solar_radiation),
+    WETNESS(R.string.meteo_type_wetness),
+    WIND_SPEED(R.string.meteo_type_wind_speed)
 }

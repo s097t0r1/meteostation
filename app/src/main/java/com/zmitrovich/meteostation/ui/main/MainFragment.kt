@@ -76,14 +76,6 @@ class MainFragment : Fragment() {
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.getWeather(
-            WeatherType.AIR_TEMPERATURE,
-            MeteoParameters(MeteoInterval.MONTH, Date(1647451012087L))
-        )
-    }
-
     private fun showError() {
         binding.lcMain.makeGone()
         binding.pbMain.makeGone()
