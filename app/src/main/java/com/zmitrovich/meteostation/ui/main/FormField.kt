@@ -3,7 +3,7 @@ package com.zmitrovich.meteostation.ui.main
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FormField<T> private constructor(
+class FormField<T> (
     initialValue: T,
     vararg val predicates: (T) -> Boolean
 ) {
@@ -11,17 +11,22 @@ class FormField<T> private constructor(
     private val _mutableState = MutableStateFlow(false)
     val state: Flow<Boolean> = _mutableState
 
+    private var afterValidation: (Boolean) -> Unit = {}
+
+    fun setAfterValidationListener(block: (Boolean) -> Unit) {
+        afterValidation = block
+    }
+
     var value: T = initialValue
         set(value) {
             field = value
-            val result = predicates.fold(true) { acc, predicate ->
+            val isValid = predicates.fold(true) { acc, predicate ->
                 acc && predicate(value)
             }
-            _mutableState.value = result
+            afterValidation.invoke(isValid)
+            _mutableState.value = isValid
         }
-
-    companion object {
-        fun <T> create(initialValue: T, vararg predicates: (T) -> Boolean) =
-            FormField(initialValue, *predicates)
-    }
 }
+
+fun <T> formFieldOf(initialValue: T, vararg predicates: (T) -> Boolean) =
+    FormField(initialValue, *predicates)

@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), MainBottomSheetDialogListener {
 
     companion object {
         fun newInstance() = MainFragment()
@@ -42,6 +42,10 @@ class MainFragment : Fragment() {
     private lateinit var binding: MainFragmentBinding
 
     private var listOfColors = ColorTemplate.VORDIPLOM_COLORS.toList()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -130,14 +134,12 @@ class MainFragment : Fragment() {
     }
 
     fun showBottomSheetDialog() {
-        MainBottomSheetFragment.create(object : MainBottomSheetDialogListener {
-            override fun onPropertiesSelected(
-                weatherType: WeatherType,
-                meteoParameters: MeteoParameters
-            ) {
-                viewModel.getWeather(weatherType, meteoParameters)
-            }
-        }).show(childFragmentManager, MainBottomSheetFragment.TAG)
+        MainBottomSheetFragment.create()
+            .show(childFragmentManager, MainBottomSheetFragment.TAG)
+    }
+
+    override fun onPropertiesSelected(weatherType: WeatherType, meteoParameters: MeteoParameters) {
+            viewModel.getWeather(weatherType, meteoParameters)
     }
 
 }
