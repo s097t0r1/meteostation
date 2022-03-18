@@ -21,12 +21,21 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
     var listener: MainBottomSheetDialogListener? = null
     lateinit var binding: MainBottomSheetFragmentBinding
 
-    private val startDateState = MutableStateFlow<String?>(null)
-    private val samplePeriodState = MutableStateFlow<MeteoInterval?>(null)
-    private val weatherTypeState = MutableStateFlow<WeatherType?>(null)
+    private val startDateField = FormField.create<String>(
+        "",
+        { it.isNotEmpty() }
+    )
+    private val samplePeriodField = FormField.create<MeteoInterval?>(
+        null,
+        { it != null }
+    )
+    private val weatherTypeField = FormField.create<WeatherType?>(
+        null,
+        { it != null }
+    )
 
-    private val formIsValid = combine(startDateState, samplePeriodState, weatherTypeState) { arr ->
-        arr.fold(true) { acc, value -> value != null && acc}
+    private val formIsValid = combine(startDateField.state, samplePeriodField.state, weatherTypeField.state) { arr ->
+        arr.fold(true) { acc, value -> value && acc}
     }
     companion object {
 
@@ -71,7 +80,7 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
         )
 
         binding.actvSamplePeriod.setOnItemClickListener { _, _, i, _ ->
-            samplePeriodState.value = intervalList[i]
+            samplePeriodField.value = intervalList[i]
         }
 
         // Setup weather type dropdown menu
@@ -85,16 +94,16 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
         )
 
         binding.actvWeatherType.setOnItemClickListener { _, _, i, _ ->
-            weatherTypeState.value = weatherTypeList[i]
+            weatherTypeField.value = weatherTypeList[i]
         }
 
         // Setup button listener
         binding.btnSelect.setOnClickListener {
             listener?.onPropertiesSelected(
-                weatherTypeState.value!!,
+                weatherTypeField.value!!,
                 MeteoParameters(
-                    samplePeriodState.value!!,
-                    SimpleDateFormat("EEE, d MMM yyyy", Locale.ROOT).parse(startDateState.value)
+                    samplePeriodField.value!!,
+                    SimpleDateFormat("EEE, d MMM yyyy", Locale.ROOT).parse(startDateField.value)
                 )
             )
             dismiss()
@@ -110,7 +119,7 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
         datePicker.addOnPositiveButtonClickListener {
             val startDate = SimpleDateFormat("EEE, d MMM yyyy", Locale.ROOT).format(Date(it))
             binding.etStartDate.setText(startDate)
-            startDateState.value = startDate
+            startDateField.value = startDate
         }
         datePicker.show(childFragmentManager, null)
     }
