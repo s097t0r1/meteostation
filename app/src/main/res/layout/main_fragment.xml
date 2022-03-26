@@ -7,12 +7,48 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/lc_main"
-        android:layout_marginVertical="64dp"
-        android:paddingHorizontal="4dp"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_initial"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:text="@string/main_initial_state"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="visible"
+        style="@style/TextAppearance.Material3.HeadlineLarge" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical" >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_meteoInterval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:text="@string/interval_template"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_meteoType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_margin="8dp"
+            android:text="@string/meteo_type_template" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lc_main"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ProgressBar
         android:id="@+id/pb_main"

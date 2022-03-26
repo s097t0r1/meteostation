@@ -18,29 +18,24 @@ class MainViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _meteoData = MutableStateFlow<MeteoData?>(null)
-    val meteoData: StateFlow<MeteoData?> = _meteoData
-
-    private val _error = MutableStateFlow(false)
-    val error: StateFlow<Boolean> = _error
+    private val _viewState = MutableStateFlow<MainViewState>(MainViewState.Initial)
+    val viewState: StateFlow<MainViewState> = _viewState
 
     fun getWeather(weatherType: WeatherType, meteoParameters: MeteoParameters) {
         viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = false
+            _viewState.value = MainViewState.Loading
             delay(3000)
             weatherRepository.getMeteorologicalIndicators(weatherType)
                 .onSuccess {
-                    _meteoData.value = it
-                    _error.value = false
+                    _viewState.value = MainViewState.DisplayMeteoData(
+                        weatherType,
+                        meteoParameters,
+                        it
+                    )
                 }
                 .onFailure {
-                    _error.value = true
+                    _viewState.value = MainViewState.Error(it)
                 }
-            _isLoading.value = false
         }
     }
 

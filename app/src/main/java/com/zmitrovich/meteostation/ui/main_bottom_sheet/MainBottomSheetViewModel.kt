@@ -1,7 +1,9 @@
-package com.zmitrovich.meteostation.ui.main
+package com.zmitrovich.meteostation.ui.main_bottom_sheet
 
 import androidx.lifecycle.ViewModel
 import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
+import com.zmitrovich.meteostation.ui.main.WeatherType
+import com.zmitrovich.meteostation.ui.main.formFieldOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

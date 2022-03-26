@@ -18,4 +18,8 @@
     <string name="meteo_type_wetness">Влажность</string>
     <string name="meteo_type_wind_speed">Скорость ветра</string>
 
+    <string name="interval_template">Период выборки: %1$s</string>
+    <string name="meteo_type_template">Тип метеоданных: %1$s</string>
+    <string name="main_initial_state">Запросите данные</string>
+
 </resources>

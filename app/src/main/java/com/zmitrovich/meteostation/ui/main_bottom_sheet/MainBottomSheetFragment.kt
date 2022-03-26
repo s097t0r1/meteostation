@@ -1,4 +1,4 @@
-package com.zmitrovich.meteostation.ui.main
+package com.zmitrovich.meteostation.ui.main_bottom_sheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,7 @@ import com.zmitrovich.meteostation.R
 import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
 import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import com.zmitrovich.meteostation.databinding.MainBottomSheetFragmentBinding
+import com.zmitrovich.meteostation.ui.main.WeatherType
 import kotlinx.coroutines.flow.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,7 +27,7 @@ class MainBottomSheetFragment : BottomSheetDialogFragment() {
 
     companion object {
 
-        const val TAG = "com.zmitrovich.meteostation.ui.main.MainBottomSheetFragment"
+        const val TAG = "com.zmitrovich.meteostation.ui.main_bottom_sheet.MainBottomSheetFragment"
 
         fun create(): MainBottomSheetFragment {
             return MainBottomSheetFragment()

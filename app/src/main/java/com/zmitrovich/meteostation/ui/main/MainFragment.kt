@@ -1,9 +1,11 @@
 package com.zmitrovich.meteostation.ui.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,16 +18,19 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.zmitrovich.meteostation.R
 import com.zmitrovich.meteostation.data.model.MeteoData
 import com.zmitrovich.meteostation.data.model.getFirstEntry
 import com.zmitrovich.meteostation.data.model.lineColors
+import com.zmitrovich.meteostation.data.model.parameters.MeteoInterval
 import com.zmitrovich.meteostation.data.model.parameters.MeteoParameters
 import com.zmitrovich.meteostation.databinding.MainFragmentBinding
+import com.zmitrovich.meteostation.ui.main_bottom_sheet.MainBottomSheetDialogListener
+import com.zmitrovich.meteostation.ui.main_bottom_sheet.MainBottomSheetFragment
 import com.zmitrovich.meteostation.ui.makeGone
 import com.zmitrovich.meteostation.ui.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -62,37 +67,55 @@ class MainFragment : Fragment(), MainBottomSheetDialogListener {
     }
 
     private fun setupObservers() {
-
-        viewModel.isLoading.onEach { isLoading ->
-            if (isLoading) showProgressBar()
-        }.launchIn(lifecycleScope)
-
-        viewModel.meteoData.onEach {
-            it?.let { setData(it) }
-        }.launchIn(lifecycleScope)
-
-        viewModel.error.onEach { isError ->
-            if (isError) showError()
-        }.launchIn(lifecycleScope)
-
-
+        lifecycleScope.launchWhenStarted {
+            viewModel.viewState.collect { state ->
+                render(state)
+            }
+        }
     }
 
-    private fun showError() {
-        binding.lcMain.makeGone()
+    fun render(viewState: MainViewState) = with(binding) {
+        tvInitial.isVisible = viewState is MainViewState.Initial
+        llMain.isVisible = viewState is MainViewState.DisplayMeteoData
+        tvError.isVisible = viewState is MainViewState.Error
+        pbMain.isVisible = viewState is MainViewState.Loading
+
+        if (viewState is MainViewState.DisplayMeteoData) {
+            binding.tvMeteoType.text =
+                getString(R.string.meteo_type_template, getString(viewState.weatherType.value))
+            binding.tvMeteoInterval.text =
+                getString(
+                    R.string.interval_template,
+                    getString(viewState.meteoParameters.interval.value)
+                )
+            setData(viewState.data)
+        } else if (viewState is MainViewState.Error) {
+
+        }
+    }
+
+    private fun showInitialScreen() {
+        binding.tvInitial.makeVisible()
+    }
+
+    private fun showError(throwable: Throwable) {
         binding.pbMain.makeGone()
         binding.tvError.makeVisible()
     }
 
     private fun showProgressBar() {
-        binding.lcMain.makeGone()
         binding.tvError.makeGone()
+        binding.llMain.makeGone()
+        binding.tvInitial.makeGone()
         binding.pbMain.makeVisible()
     }
 
-    private fun showData() {
-        binding.lcMain.makeVisible()
-        binding.tvError.makeGone()
+    private fun showData(weatherType: WeatherType, interval: MeteoInterval) {
+        binding.tvMeteoType.text =
+            getString(R.string.meteo_type_template, getString(weatherType.value))
+        binding.tvMeteoInterval.text =
+            getString(R.string.interval_template, getString(interval.value))
+        binding.llMain.makeVisible()
         binding.pbMain.makeGone()
     }
 
@@ -112,14 +135,13 @@ class MainFragment : Fragment(), MainBottomSheetDialogListener {
         binding.lcMain.data = LineData(dataSets).apply {
             lineColors = listOfColors
         }
-        showData()
         binding.lcMain.invalidate()
     }
 
     private fun setupXAxis(datesList: List<Date>) {
         val formatter: ValueFormatter = object : ValueFormatter() {
 
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
             override fun getAxisLabel(value: Float, axis: AxisBase): String {
                 return simpleDateFormat.format(datesList[value.toInt()])
@@ -139,7 +161,7 @@ class MainFragment : Fragment(), MainBottomSheetDialogListener {
     }
 
     override fun onPropertiesSelected(weatherType: WeatherType, meteoParameters: MeteoParameters) {
-            viewModel.getWeather(weatherType, meteoParameters)
+        viewModel.getWeather(weatherType, meteoParameters)
     }
 
 }
